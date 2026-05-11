@@ -1543,6 +1543,7 @@ function readInputs() {
    Main render loop
    ================================================================ */
 function render() {
+  saveInputs();
   const i = readInputs();
 
   // Sidebar readouts
@@ -1765,6 +1766,30 @@ function saveTweaks(patch) {
   try { localStorage.setItem('wealthplanner-tweaks', JSON.stringify(TWEAKS)); } catch (_) {}
   applyTweaks();
 }
+
+const INPUT_IDS = [
+  'currentWealth','monthlyContribution','targetWealth','educationCost',
+  'currentAge','retirementAge','returnRate','inflationRate',
+  'homeLoanEnd','carLoanEnd',
+];
+
+function saveInputs() {
+  const vals = {};
+  INPUT_IDS.forEach(id => { vals[id] = $(id).value; });
+  try { localStorage.setItem('wealthplanner-inputs', JSON.stringify(vals)); } catch (_) {}
+}
+
+function restoreInputs() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('wealthplanner-inputs') || 'null');
+    if (!saved) return;
+    INPUT_IDS.forEach(id => {
+      if (saved[id] != null) $(id).value = saved[id];
+    });
+  } catch (_) {}
+}
+
+restoreInputs();
 
 // Restore saved tweaks
 try {
