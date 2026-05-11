@@ -1286,12 +1286,13 @@ const verticalMilestones = {
 };
 
 function resolveCssColor(value) {
-  const el = document.createElement('div');
-  el.style.cssText = `position:absolute;color:${value}`;
-  document.body.appendChild(el);
-  const resolved = getComputedStyle(el).color;
-  document.body.removeChild(el);
-  return resolved;
+  const tmp = document.createElement('canvas');
+  tmp.width = tmp.height = 1;
+  const c = tmp.getContext('2d');
+  c.fillStyle = value;
+  c.fillRect(0, 0, 1, 1);
+  const [r, g, b] = c.getImageData(0, 0, 1, 1).data;
+  return `rgb(${r}, ${g}, ${b})`;
 }
 
 function toRgba(rgb, alpha) {
