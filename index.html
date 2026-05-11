@@ -1285,18 +1285,31 @@ const verticalMilestones = {
   }
 };
 
+function resolveCssColor(value) {
+  const el = document.createElement('div');
+  el.style.cssText = `position:absolute;color:${value}`;
+  document.body.appendChild(el);
+  const resolved = getComputedStyle(el).color;
+  document.body.removeChild(el);
+  return resolved;
+}
+
+function toRgba(rgb, alpha) {
+  return rgb.replace('rgb(', 'rgba(').replace(')', `, ${alpha})`);
+}
+
 function renderChart(base, alt, targetWealth) {
   const canvas = document.getElementById('wealthChart');
   const ctx    = canvas.getContext('2d');
   if (chart) chart.destroy();
 
   const css    = getComputedStyle(document.documentElement);
-  const accent = css.getPropertyValue('--accent').trim();
-  const altCol = css.getPropertyValue('--alt').trim();
-  const target = css.getPropertyValue('--target').trim();
-  const ink    = css.getPropertyValue('--ink').trim();
-  const muted  = css.getPropertyValue('--muted').trim();
-  const hair   = css.getPropertyValue('--hair-2').trim();
+  const accent = resolveCssColor(css.getPropertyValue('--accent').trim());
+  const altCol = resolveCssColor(css.getPropertyValue('--alt').trim());
+  const target = resolveCssColor(css.getPropertyValue('--target').trim());
+  const ink    = resolveCssColor(css.getPropertyValue('--ink').trim());
+  const muted  = resolveCssColor(css.getPropertyValue('--muted').trim());
+  const hair   = resolveCssColor(css.getPropertyValue('--hair-2').trim());
 
   const datasets = [
     {
@@ -1305,8 +1318,8 @@ function renderChart(base, alt, targetWealth) {
       borderColor: accent,
       backgroundColor: (ctx) => {
         const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 340);
-        g.addColorStop(0, 'oklch(0.52 0.07 var(--accent-hue) / 0.18)');
-        g.addColorStop(1, 'oklch(0.52 0.07 var(--accent-hue) / 0)');
+        g.addColorStop(0, toRgba(accent, 0.18));
+        g.addColorStop(1, toRgba(accent, 0));
         return g;
       },
       borderWidth: 2,
@@ -1361,7 +1374,7 @@ function renderChart(base, alt, targetWealth) {
   points.push({ year: retYear, key: 'retire', glyph: 'R', color: ink });
   if (base.targetReached) points.push({ year: base.targetYear, key: 'target', glyph: 'T', color: target });
   if (homeYr > currentYear && homeYr < horizonEnd) points.push({ year: homeYr, key: 'home', glyph: 'H', color: accent });
-  if (carYr  > currentYear && carYr  < horizonEnd) points.push({ year: carYr,  key: 'car',  glyph: 'V', color: 'oklch(0.45 0.12 280)' });
+  if (carYr  > currentYear && carYr  < horizonEnd) points.push({ year: carYr,  key: 'car',  glyph: 'V', color: resolveCssColor('oklch(0.45 0.12 280)') });
 
   if (CHILD1_UNI_START > currentYear && CHILD1_UNI_START + 3 < horizonEnd)
     spans.push({ startYear: CHILD1_UNI_START, endYear: CHILD1_UNI_START + 3, key: 'c1', glyph: '1', color: altCol });
@@ -1378,7 +1391,7 @@ function renderChart(base, alt, targetWealth) {
     if (homeYr > currentYear && homeYr < horizonEnd)
       items.push({ key: 'home', cls: 'glyph', glyph: 'H', color: accent, label: 'Home loan ends', year: homeYr });
     if (carYr > currentYear && carYr < horizonEnd)
-      items.push({ key: 'car', cls: 'glyph', glyph: 'V', color: 'oklch(0.45 0.12 280)', label: 'Car loan ends', year: carYr });
+      items.push({ key: 'car', cls: 'glyph', glyph: 'V', color: resolveCssColor('oklch(0.45 0.12 280)'), label: 'Car loan ends', year: carYr });
     if (CHILD1_UNI_START > currentYear && CHILD1_UNI_START + 3 < horizonEnd)
       items.push({ key: 'c1', cls: 'glyph-bar', glyph: '1', color: altCol, label: 'Child 1 · uni', year: `${CHILD1_UNI_START}–${CHILD1_UNI_START + 3}` });
     if (CHILD2_UNI_START > currentYear && CHILD2_UNI_START + 3 < horizonEnd)
