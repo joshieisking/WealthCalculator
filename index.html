@@ -30,13 +30,13 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
+  html, body { height: 100%; overflow-x: hidden; }
   body {
     font-family: 'Instrument Sans', system-ui, -apple-system, Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--ink);
-    font-size: 14px;
-    line-height: 1.45;
+    font-size: 16px;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "ss01", "cv11";
   }
@@ -93,8 +93,8 @@
     align-items: baseline;
     margin-bottom: 6px;
   }
-  .field-label { font-size: 13px; color: var(--ink-2); }
-  .field-value { font-size: 13px; color: var(--ink); font-weight: 500; }
+  .field-label { font-size: 14px; color: var(--ink-2); }
+  .field-value { font-size: 14px; color: var(--ink); font-weight: 500; }
   .field-value .unit { color: var(--muted); font-weight: 400; margin-left: 1px; }
 
   .num-input {
@@ -107,7 +107,7 @@
     font: inherit;
     font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-variant-numeric: tabular-nums;
-    font-size: 14px;
+    font-size: 15px;
     outline: none;
     transition: border-color .12s, background .12s;
   }
@@ -127,12 +127,23 @@
   }
   input[type="range"]::-webkit-slider-runnable-track {
     height: 2px;
-    background: var(--hair);
+    background: linear-gradient(
+      to right,
+      var(--accent) 0%,
+      var(--accent) var(--slider-pct, 0%),
+      var(--hair) var(--slider-pct, 0%),
+      var(--hair) 100%
+    );
     border-radius: 2px;
   }
   input[type="range"]::-moz-range-track {
     height: 2px;
     background: var(--hair);
+    border-radius: 2px;
+  }
+  input[type="range"]::-moz-range-progress {
+    height: 2px;
+    background: var(--accent);
     border-radius: 2px;
   }
   input[type="range"]::-webkit-slider-thumb {
@@ -183,7 +194,7 @@
   }
   .topbar-sub {
     color: var(--muted);
-    font-size: 13px;
+    font-size: 14px;
     margin-top: 4px;
   }
   .topbar-status {
@@ -232,7 +243,7 @@
   }
   .kpi-sub {
     margin-top: 8px;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--muted);
     font-variant-numeric: tabular-nums;
   }
@@ -282,7 +293,7 @@
     padding-top: 12px;
     border-top: 1px solid var(--hair-2);
     color: var(--muted);
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.5;
   }
   .chart-legend-foot {
@@ -686,6 +697,58 @@
   }
   .tweaks-trigger:hover { color: var(--ink); border-color: var(--ink-2); }
 
+  /* ── Derived / computed field ──────────────────────────────────── */
+  .field--derived .field-row {
+    background: var(--surface-2);
+    border: 1px solid var(--hair-2);
+    border-radius: 6px;
+    padding: 7px 10px;
+    margin-bottom: 0;
+  }
+  .field--derived .field-label { color: var(--muted); }
+  .field--derived .field-value { color: var(--muted); }
+  .field-computed-badge {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--hair);
+    color: var(--muted-2);
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-left: 5px;
+    vertical-align: middle;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── Rail toggle (mobile only) ─────────────────────────────────── */
+  .rail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+  .rail-toggle {
+    display: none;
+    background: var(--surface-2);
+    border: 1px solid var(--hair);
+    border-radius: 6px;
+    padding: 7px 13px;
+    cursor: pointer;
+    color: var(--ink-2);
+    font-size: 13px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 500;
+    line-height: 1;
+    gap: 6px;
+    align-items: center;
+    white-space: nowrap;
+    transition: color .12s, border-color .12s, background .12s;
+  }
+  .rail-toggle:hover { color: var(--ink); border-color: var(--ink-2); background: #fff; }
+  .rail-toggle-icon { display: inline-block; transition: transform .2s; }
+  .rail--open .rail-toggle-icon { transform: rotate(180deg); }
+
   /* ── Responsive ────────────────────────────────────────────────── */
   @media (max-width: 1100px) {
     .kpis { grid-template-columns: repeat(2, 1fr); }
@@ -693,13 +756,48 @@
     .coast-grid, .income-grid, .whatif-grid { grid-template-columns: 1fr; gap: 22px; }
   }
   @media (max-width: 760px) {
-    .app { grid-template-columns: 1fr; }
-    .rail { position: static; height: auto; order: 1; }
-    .main { order: 2; }
+    html, body { height: auto; min-height: 100%; }
+    .app { grid-template-columns: 1fr; min-width: 0; }
+    .rail {
+      position: static;
+      height: auto;
+      overflow-y: visible;
+      order: 1;
+      padding-bottom: 0;
+      min-width: 0;
+      width: 100%;
+    }
+    .rail-head { margin-bottom: 0; padding-bottom: 16px; }
+    .rail-toggle { display: flex; }
+    .rail-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .3s ease, padding .3s ease;
+      padding-top: 0;
+    }
+    .rail--open .rail-body {
+      max-height: 2000px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+    .main { order: 2; padding: 20px 16px 32px; }
+    .topbar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .topbar-title { font-size: 24px; }
     .edu-grid { grid-template-columns: 1fr; }
     .lens-tabs { flex-wrap: wrap; }
     .lens-tab { flex: 1 1 50%; border-bottom: 1px solid var(--hair-2); }
+    .chart-wrap { height: 240px !important; }
+    .kpi-value { font-size: 28px; }
     .tweaks-panel { right: 12px; bottom: 12px; width: calc(100vw - 24px); }
+  }
+  @media (max-width: 480px) {
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .kpi-value { font-size: 22px; }
+    .kpi { padding: 14px 14px 16px; }
   }
 </style>
 </head>
@@ -798,35 +896,35 @@
     <!-- Lens tabs -->
     <section class="lens-card">
       <div class="lens-tabs" role="tablist">
-        <button class="lens-tab active" data-lens="timeline">
+        <button class="lens-tab active" data-lens="timeline" role="tab" aria-selected="true" aria-controls="panel-timeline" id="tab-btn-timeline">
           <div class="lens-tab-title">Timeline</div>
           <div class="lens-tab-value" id="tab-timeline">Milestones</div>
         </button>
-        <button class="lens-tab" data-lens="coast">
+        <button class="lens-tab" data-lens="coast" role="tab" aria-selected="false" aria-controls="panel-coast" id="tab-btn-coast">
           <div class="lens-tab-title">Coast FIRE</div>
           <div class="lens-tab-value" id="tab-coast">—</div>
         </button>
-        <button class="lens-tab" data-lens="income">
+        <button class="lens-tab" data-lens="income" role="tab" aria-selected="false" aria-controls="panel-income" id="tab-btn-income">
           <div class="lens-tab-title">4% Income</div>
           <div class="lens-tab-value" id="tab-income">—</div>
         </button>
-        <button class="lens-tab" data-lens="education">
+        <button class="lens-tab" data-lens="education" role="tab" aria-selected="false" aria-controls="panel-education" id="tab-btn-education">
           <div class="lens-tab-title">Education</div>
           <div class="lens-tab-value" id="tab-education">2 kids</div>
         </button>
-        <button class="lens-tab" data-lens="whatif">
+        <button class="lens-tab" data-lens="whatif" role="tab" aria-selected="false" aria-controls="panel-whatif" id="tab-btn-whatif">
           <div class="lens-tab-title">What-if</div>
           <div class="lens-tab-value" id="tab-whatif">Compare</div>
         </button>
       </div>
 
       <!-- Timeline -->
-      <div class="lens-body" data-lens-body="timeline">
+      <div class="lens-body" data-lens-body="timeline" id="panel-timeline" role="tabpanel" aria-labelledby="tab-btn-timeline">
         <div class="timeline" id="timeline"></div>
       </div>
 
       <!-- Coast FIRE -->
-      <div class="lens-body" data-lens-body="coast" hidden>
+      <div class="lens-body" data-lens-body="coast" id="panel-coast" role="tabpanel" aria-labelledby="tab-btn-coast" hidden>
         <div class="coast-grid">
           <div>
             <div class="coast-headline" id="coast-headline">—</div>
@@ -853,7 +951,7 @@
       </div>
 
       <!-- 4% Income -->
-      <div class="lens-body" data-lens-body="income" hidden>
+      <div class="lens-body" data-lens-body="income" id="panel-income" role="tabpanel" aria-labelledby="tab-btn-income" hidden>
         <div class="income-grid">
           <div>
             <div class="income-big">SGD <span id="income-annual">0</span></div>
@@ -883,7 +981,7 @@
       </div>
 
       <!-- Education -->
-      <div class="lens-body" data-lens-body="education" hidden>
+      <div class="lens-body" data-lens-body="education" id="panel-education" role="tabpanel" aria-labelledby="tab-btn-education" hidden>
         <div class="edu-grid">
           <div class="edu-card">
             <div class="edu-name">Child 1 · born 2021</div>
@@ -904,7 +1002,7 @@
       </div>
 
       <!-- What-if -->
-      <div class="lens-body" data-lens-body="whatif" hidden>
+      <div class="lens-body" data-lens-body="whatif" id="panel-whatif" role="tabpanel" aria-labelledby="tab-btn-whatif" hidden>
         <div class="whatif-grid">
           <div class="scenario">
             <div class="scenario-title"><span class="swatch"></span>Current plan</div>
@@ -971,9 +1069,15 @@
   <!-- ── Right rail — assumptions ─────────────────────────────────── -->
   <aside class="rail">
     <div class="rail-head">
-      <div class="rail-eyebrow">Your plan</div>
-      <div class="rail-title">Assumptions</div>
+      <div>
+        <div class="rail-eyebrow">Your plan</div>
+        <div class="rail-title">Assumptions</div>
+      </div>
+      <button class="rail-toggle" id="railToggle" aria-expanded="false" aria-controls="railBody">
+        Edit <span class="rail-toggle-icon">▾</span>
+      </button>
     </div>
+    <div id="railBody" class="rail-body">
 
     <div class="group">
       <div class="group-label">You</div>
@@ -1082,13 +1186,14 @@
         </div>
       </div>
 
-      <div class="field">
+      <div class="field field--derived">
         <div class="field-row">
-          <span class="field-label">Real return</span>
+          <span class="field-label">Real return <span class="field-computed-badge">computed</span></span>
           <span class="field-value mono"><span id="v-realReturn">4.5</span>%</span>
         </div>
       </div>
     </div>
+    </div><!-- /rail-body -->
   </aside>
 
 </div>
@@ -1477,11 +1582,11 @@ function renderChart(base, alt, targetWealth) {
     legendEl?.querySelectorAll('.item.hl').forEach(el => el.classList.remove('hl'));
   }
 
-  canvas.onmousemove = (e) => {
+  function handlePointer(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     const dpr  = window.devicePixelRatio || 1;
-    const x = (e.clientX - rect.left) * (canvas.width  / rect.width)  / dpr;
-    const y = (e.clientY - rect.top)  * (canvas.height / rect.height) / dpr;
+    const x = (clientX - rect.left) * (canvas.width  / rect.width)  / dpr;
+    const y = (clientY - rect.top)  * (canvas.height / rect.height) / dpr;
     const key = hitTest(x, y);
     clearHl();
     if (key && legendEl) {
@@ -1490,8 +1595,17 @@ function renderChart(base, alt, targetWealth) {
     } else {
       canvas.style.cursor = '';
     }
-  };
+  }
+
+  canvas.onmousemove  = (e) => handlePointer(e.clientX, e.clientY);
   canvas.onmouseleave = () => { clearHl(); canvas.style.cursor = ''; };
+
+  canvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+    handlePointer(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+  canvas.addEventListener('touchend', () => clearHl());
 }
 
 /* ================================================================
@@ -1526,12 +1640,18 @@ document.querySelectorAll('input.money').forEach(el => {
 });
 
 function readInputs() {
+  const currentAge    = +$('currentAge').value  || 30;
+  const retirementAge = +$('retirementAge').value || 50;
+  // Keep retirement age at least 1 year ahead of current age
+  if (retirementAge <= currentAge) {
+    $('retirementAge').value = currentAge + 1;
+  }
   return {
     currentWealth:       parseMoney($('currentWealth')),
     monthlyContribution: parseMoney($('monthlyContribution')),
     targetWealth:        parseMoney($('targetWealth')),
-    currentAge:          +$('currentAge').value  || 30,
-    retirementAge:       +$('retirementAge').value || 50,
+    currentAge,
+    retirementAge:       Math.max(retirementAge, currentAge + 1),
     returnRate:          +$('returnRate').value / 100,
     inflationRate:       +$('inflationRate').value / 100,
     educationCost:       parseMoney($('educationCost')),
@@ -1710,8 +1830,12 @@ function render() {
    ================================================================ */
 document.querySelectorAll('.lens-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    document.querySelectorAll('.lens-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.lens-tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
     tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
     const name = tab.dataset.lens;
     document.querySelectorAll('[data-lens-body]').forEach(b => {
       b.hidden = b.dataset.lensBody !== name;
@@ -1783,7 +1907,9 @@ function restoreInputs() {
     const saved = JSON.parse(localStorage.getItem('wealthplanner-inputs') || 'null');
     if (!saved) return;
     INPUT_IDS.forEach(id => {
-      if (saved[id] != null) $(id).value = saved[id];
+      if (saved[id] == null) return;
+      const el = $(id);
+      el.value = el.classList.contains('money') ? formatMoney(saved[id]) : saved[id];
     });
   } catch (_) {}
 }
@@ -1824,6 +1950,32 @@ document.addEventListener('click', (e) => {
 });
 
 applyTweaks();
+
+/* ================================================================
+   Slider fill — keep --slider-pct in sync
+   ================================================================ */
+function updateSliderFill(el) {
+  const min = +el.min || 0;
+  const max = +el.max || 100;
+  const pct = ((+el.value - min) / (max - min)) * 100;
+  el.style.setProperty('--slider-pct', pct.toFixed(1) + '%');
+}
+document.querySelectorAll('input[type="range"]').forEach(el => {
+  updateSliderFill(el);
+  el.addEventListener('input', () => updateSliderFill(el));
+});
+
+/* ================================================================
+   Rail toggle (mobile)
+   ================================================================ */
+const rail       = document.querySelector('.rail');
+const railToggle = $('railToggle');
+if (railToggle) {
+  railToggle.addEventListener('click', () => {
+    const open = rail.classList.toggle('rail--open');
+    railToggle.setAttribute('aria-expanded', open);
+  });
+}
 </script>
 </body>
 </html>
