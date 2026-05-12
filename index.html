@@ -49,8 +49,7 @@
   .app {
     display: grid;
     grid-template-columns: 1fr 340px;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
   }
 
   /* ── Right rail ─────────────────────────────────────────────────── */
@@ -58,15 +57,13 @@
     background: var(--surface);
     border-left: 1px solid var(--hair);
     padding: 28px 24px 32px;
+    position: sticky;
+    top: 0;
     height: 100vh;
     overflow-y: auto;
     order: 2;
   }
-  .main {
-    order: 1;
-    height: 100vh;
-    overflow-y: auto;
-  }
+  .main { order: 1; }
 
   .rail-head { margin-bottom: 28px; }
   .rail-eyebrow {
