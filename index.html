@@ -869,7 +869,7 @@
         <div class="kpi-sub" id="kpi-targetYear-sub">expected</div>
       </div>
       <div class="kpi">
-        <div class="kpi-label">Buffer vs target</div>
+        <div class="kpi-label">Goal progress</div>
         <div class="kpi-value"><span id="kpi-buffer">0</span><span class="small">%</span></div>
         <div class="kpi-sub" id="kpi-buffer-sub">at retirement</div>
       </div>
@@ -1692,13 +1692,8 @@ function render() {
   const bufferPct = i.targetWealth > 0 ? (bufferAmt / i.targetWealth * 100) : 0;
   $('kpi-buffer').textContent = (bufferPct >= 0 ? '+' : '−') + Math.abs(bufferPct).toFixed(0);
   const bufSub = $('kpi-buffer-sub');
-  if (bufferAmt >= 0) {
-    bufSub.textContent = `SGD ${fmtShort(bufferAmt)} above target`;
-    bufSub.className   = 'kpi-sub good';
-  } else {
-    bufSub.textContent = `SGD ${fmtShort(Math.abs(bufferAmt))} below target`;
-    bufSub.className   = 'kpi-sub bad';
-  }
+  bufSub.textContent = `retire with SGD ${fmtShort(base.retirementWealth)} of SGD ${fmtShort(i.targetWealth)} goal`;
+  bufSub.className   = bufferAmt >= 0 ? 'kpi-sub good' : 'kpi-sub bad';
 
   // Tab summaries
   const coastNumber = i.targetWealth / Math.pow(1 + i.returnRate, i.retirementAge - i.currentAge);
